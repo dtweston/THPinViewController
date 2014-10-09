@@ -19,6 +19,8 @@
 
 @property (nonatomic, strong) UIColor *backgroundColorBackup;
 
+@property (nonatomic, assign) BOOL didSetTextColor;
+
 @end
 
 @implementation THPinNumButton
@@ -28,11 +30,16 @@
     self = [super init];
     if (self)
     {
+        _borderWidth = 1.0f;
+        _numberFont = [UIFont systemFontOfSize:10];
+        _textFont = [UIFont systemFontOfSize:10];
+        _textColor = self.tintColor;
+        
         _number = number;
         _letters = letters;
         
         self.layer.cornerRadius = [[self class] diameter] / 2.0f;
-        self.layer.borderWidth = 1.0f;
+        self.layer.borderWidth = _borderWidth;
         
         UIView *contentView = [[UIView alloc] init];
         contentView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -43,7 +50,7 @@
         _numberLabel.translatesAutoresizingMaskIntoConstraints = NO;
         _numberLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)number];
         _numberLabel.textAlignment = NSTextAlignmentCenter;
-        _numberLabel.font = [UIFont systemFontOfSize:(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 41.0f : 36.0f];
+        _numberLabel.font = [self.numberFont fontWithSize:(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 41.0f : 36.0f];
         [contentView addSubview:_numberLabel];
         [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[numberLabel]|" options:0
                                                                             metrics:nil
@@ -58,7 +65,7 @@
             _lettersLabel.translatesAutoresizingMaskIntoConstraints = NO;
             _lettersLabel.text = letters;
             _lettersLabel.textAlignment = NSTextAlignmentCenter;
-            _lettersLabel.font = [UIFont systemFontOfSize:(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 11.0f : 9.0f];
+            _lettersLabel.font = [_textFont fontWithSize:(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 11.0f : 9.0f];
             [contentView addSubview:_lettersLabel];
             [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[lettersLabel]|" options:0
                                                                                 metrics:nil
@@ -108,11 +115,49 @@
     return self;
 }
 
+- (void)setBorderWidth:(CGFloat)borderWidth
+{
+    if (_borderWidth != borderWidth) {
+        _borderWidth = borderWidth;
+        self.layer.borderWidth = borderWidth;
+    }
+}
+
+- (void)setTextFont:(UIFont *)textFont
+{
+    if (_textFont != textFont) {
+        _textFont = textFont;
+        _lettersLabel.font = [_textFont fontWithSize:(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 11.0f : 9.0f];
+    }
+}
+
+- (void)setNumberFont:(UIFont *)numberFont
+{
+    if (_numberFont != numberFont) {
+        _numberFont = numberFont;
+        _numberLabel.font = [self.numberFont fontWithSize:(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 41.0f : 36.0f];
+    }
+}
+
+- (void)setTextColor:(UIColor *)textColor
+{
+    if (_textColor != textColor) {
+        _textColor = textColor;
+        self.didSetTextColor = YES;
+        self.numberLabel.textColor = self.textColor;
+        self.lettersLabel.textColor = self.textColor;
+    }
+}
+
 - (void)tintColorDidChange
 {
     self.layer.borderColor = [self.tintColor CGColor];
-    self.numberLabel.textColor = self.tintColor;
-    self.lettersLabel.textColor = self.tintColor;
+    if (!self.didSetTextColor) {
+        // This needs to use the backing field directly, so it doesn't trigger didSetTextColor
+        _textColor = self.tintColor;
+    }
+    self.numberLabel.textColor = self.textColor;
+    self.lettersLabel.textColor = self.textColor;
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
@@ -144,8 +189,8 @@
                      animations:^{
                          self.backgroundColor = self.backgroundColorBackup;
                      } completion:^(BOOL finished) {
-                         self.numberLabel.textColor = self.tintColor;
-                         self.lettersLabel.textColor = self.tintColor;
+                         self.numberLabel.textColor = self.textColor;
+                         self.lettersLabel.textColor = self.textColor;
                      }];
 }
 

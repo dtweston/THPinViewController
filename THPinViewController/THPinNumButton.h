@@ -13,6 +13,10 @@
 
 @property (nonatomic, readonly, assign) NSUInteger number;
 @property (nonatomic, readonly, copy) NSString *letters;
+@property (nonatomic, assign) CGFloat borderWidth UI_APPEARANCE_SELECTOR;
+@property (nonatomic, strong) UIColor *textColor UI_APPEARANCE_SELECTOR;
+@property (nonatomic, strong) UIFont *numberFont UI_APPEARANCE_SELECTOR;
+@property (nonatomic, strong) UIFont *textFont UI_APPEARANCE_SELECTOR;
 
 - (instancetype)initWithNumber:(NSUInteger)number letters:(NSString *)letters NS_DESIGNATED_INITIALIZER;
 
