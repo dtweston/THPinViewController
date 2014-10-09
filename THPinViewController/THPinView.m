@@ -35,11 +35,12 @@
     {
         _delegate = delegate;
         _input = [NSMutableString string];
+        _textFont = [UIFont systemFontOfSize:12];
         
         _promptLabel = [[UILabel alloc] init];
         _promptLabel.translatesAutoresizingMaskIntoConstraints = NO;
         _promptLabel.textAlignment = NSTextAlignmentCenter;
-        _promptLabel.font = [UIFont systemFontOfSize:(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 22.0f : 18.0f];
+        _promptLabel.font = [_textFont fontWithSize:(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 22.0f : 18.0f];
         [_promptLabel setContentCompressionResistancePriority:UILayoutPriorityFittingSizeLevel
                                                       forAxis:UILayoutConstraintAxisHorizontal];
         [self addSubview:_promptLabel];
@@ -65,7 +66,7 @@
         
         _bottomButton = [UIButton buttonWithType:UIButtonTypeSystem];
         _bottomButton.translatesAutoresizingMaskIntoConstraints = NO;
-        _bottomButton.titleLabel.font = [UIFont systemFontOfSize:16.0f];
+        _bottomButton.titleLabel.font = [_textFont fontWithSize:16.0f];
         _bottomButton.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         [_bottomButton setContentCompressionResistancePriority:UILayoutPriorityFittingSizeLevel
                                                        forAxis:UILayoutConstraintAxisHorizontal];
@@ -164,6 +165,15 @@
 - (void)setPromptColor:(UIColor *)promptColor
 {
     self.promptLabel.textColor = promptColor;
+}
+
+- (void)setTextFont:(UIFont *)textFont
+{
+    if (_textFont != textFont) {
+        _textFont = textFont;
+        self.promptLabel.font = [self.textFont fontWithSize:(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 22.0f : 18.0f];
+        self.bottomButton.titleLabel.font = [self.textFont fontWithSize:16.0f];
+    }
 }
 
 - (BOOL)hideLetters
